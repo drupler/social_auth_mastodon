@@ -1,0 +1,5 @@
+services:
+  social_auth_mastodon.manager:
+    class: Drupal\social_auth_mastodon\MastodonAuthManager
+    arguments:
+      - '@config.factory'

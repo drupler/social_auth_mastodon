@@ -1,0 +1,20 @@
+{
+    "name": "drupal/social_auth_mastodon",
+    "description": "Logging in to Drupal with Mastodon account",
+    "type": "drupal-module",
+    "homepage": "https://www.drupal.org/project/social_api_mastodon",
+    "authors": [
+        {
+            "name": "rnickson",
+            "email": "m@mickson.me"
+        }
+    ],
+    "require" : {
+        "lrf141/oauth2-mastodon": "^1.0"
+    },
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/social_api",
+        "source": "http://cgit.drupalcode.org/social_api"
+    },
+    "license": "GPL-2.0+"
+}
