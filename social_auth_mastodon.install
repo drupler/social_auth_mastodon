@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update, and uninstall functions for the Social Auth Google module.
+ * Install, update, and uninstall functions for the Social Auth Mastodon module.
  */
 
 use Drupal\social_api\Utility\SocialApiImplementerInstaller;
@@ -11,7 +11,7 @@ use Drupal\social_auth\Controller\SocialAuthController;
 /**
  * Implements hook_requirements().
  *
- * Checks that a compatible version of oAuth2 Google library for the
+ * Checks that a compatible version of OAuth2 Mastodon library for the
  * league OAuth2 client with Composer. Check installation instructions
  * from the README.txt.
  */

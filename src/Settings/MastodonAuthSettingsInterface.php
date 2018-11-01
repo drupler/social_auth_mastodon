@@ -24,11 +24,11 @@ interface MastodonAuthSettingsInterface {
   public function getClientSecret();
 
   /**
-   * Gets the restricted domain.
+   * Gets the selected instance
    *
    * @return string
-   *   The restricted domain.
+   *   The selected instance.
    */
-  public function getRestrictedDomain();
+  public function getInstance();
 
 }

@@ -90,6 +90,14 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       ),
     ];
 
+    $form['mastodon_settings']['instance'] = [
+      '#type' => 'textfield',
+      '#required' => TRUE,
+      '#title' => $this->t('Mastodon instance URI'),
+      '#default_value' => $config->get('instance'),
+      '#description' => $this->t('The Mastodon instance that hosts accounts you want to log in with'),
+    ];
+
     $form['mastodon_settings']['client_id'] = [
       '#type' => 'textfield',
       '#required' => TRUE,
@@ -106,26 +114,12 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       '#description' => $this->t('Copy the Client Secret here.'),
     ];
 
-    $form['mastodon_settings']['authorized_redirect_url'] = [
+    $form['mastodon_settings']['redirect_uri'] = [
       '#type' => 'textfield',
       '#disabled' => TRUE,
-      '#title' => $this->t('Authorized redirect URIs'),
-      '#description' => $this->t('Copy this value to <em>Authorized redirect URIs</em> field of your Mastodon App settings.'),
-      '#default_value' => $GLOBALS['base_url'] . '/user/login/mastodon/callback',
-    ];
-
-    $form['mastodon_settings']['advanced'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Advanced settings'),
-      '#open' => FALSE,
-    ];
-
-    $form['mastodon_settings']['advanced']['scopes'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Scopes for API call'),
-      '#default_value' => $config->get('scopes'),
-      '#description' => $this->t('Define any additional scopes to be requested, separated by a comma
-                                  You can see the full list of valid scopes and their description <a href="@scopes">here</a>.', ['@scopes' => 'https://docs.joinmastodon.org/api/permissions/']),
+      '#title' => $this->t('Redirect URI'),
+      '#description' => $this->t('Copy this to <em>Redirect URIs</em> when creating a key'),
+      '#default_value' => $GLOBALS['base_url'],
     ];
 
     return parent::buildForm($form, $form_state);

@@ -53,11 +53,11 @@ class MastodonAuthSettings extends SettingsBase implements MastodonAuthSettingsI
   /**
    * {@inheritdoc}
    */
-  public function getRestrictedDomain() {
-    if (!$this->restrictedDomain) {
-      $this->restrictedDomain = $this->config->get('restricted_domain');
+  public function getInstance() {
+    if (!$this->instance) {
+      $this->instance = $this->config->get('instance');
     }
-    return $this->restrictedDomain;
+    return $this->instance;
   }
 
 }

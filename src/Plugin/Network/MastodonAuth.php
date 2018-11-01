@@ -147,9 +147,8 @@ class MastodonAuth extends NetworkBase implements MastodonAuthInterface {
         'clientId' => $settings->getClientId(),
         'clientSecret' => $settings->getClientSecret(),
         'redirectUri' => $this->requestContext->getCompleteBaseUrl() . '/user/login/mastodon/callback',
-        'accessType' => 'offline',
-        'verify' => FALSE,
-        'hostedDomain' => $settings->getRestrictedDomain(),
+        'instance' => $settings->getInstance(),
+        'scope' => 'read:accounts',
       ];
 
       // Proxy configuration data for outward proxy.

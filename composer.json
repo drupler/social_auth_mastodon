@@ -2,6 +2,7 @@
     "name": "drupal/social_auth_mastodon",
     "description": "Logging in to Drupal with Mastodon account",
     "type": "drupal-module",
+    "minimum-stability": "dev",
     "homepage": "https://www.drupal.org/project/social_api_mastodon",
     "authors": [
         {
