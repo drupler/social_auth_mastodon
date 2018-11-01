@@ -80,4 +80,104 @@ class MastodonAuthController extends ControllerBase {
     // Sets the session keys to nullify if user could not logged in.
     $this->userManager->setSessionKeysToNullify(['access_token', 'oauth2state']);
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('plugin.network.manager'),
+      $container->get('social_auth.user_manager'),
+      $container->get('social_auth_mastodon.manager'),
+      $container->get('request_stack'),
+      $container->get('social_auth.data_handler')
+    );
+  }
+
+  /**
+   * Response for path 'user/login/mastodon'.
+   *
+   * Redirects the user to Mastodon for authentication.
+   */
+  public function redirectToMastodon() {
+    /* @var \Lrf141\OAuth2\Client\Provider\Mastodon false $mastodon */
+    $mastodon = $this->networkManager->createInstance('social_auth_mastodon')->getSdk();
+
+    // If client could not be obtained.
+    if (!$mastodon) {
+      drupal_set_message($this->t('Social Auth Mastodon not configured properly. Contact site administrator.'), 'error');
+      return $this->redirect('user.login');
+    }
+
+    // Destination parameter specified in url.
+    $destination = $this->request->getCurrentRequest()->get('destination');
+    // If destination parameter is set, save it.
+    if ($destination) {
+      $this->userManager->setDestination($destination);
+    }
+
+    // Google service was returned, inject it to $googleManager.
+    $this->mastodonManager->setClient($google);
+
+    // Generates the URL where the user will be redirected for Google login.
+    // If the user did not have email permission granted on previous attempt,
+    // we use the re-request URL requesting only the email address.
+    $mastodon_login_url = $this->mastodonManager->getAuthorizationUrl();
+
+    $state = $this->mastodonManager->getState();
+
+    $this->dataHandler->set('oauth2state', $state);
+
+    return new TrustedRedirectResponse($mastodon_login_url);
+  }
+
+  /**
+   * Response for path 'user/login/mastodon/callback'.
+   *
+   * Google returns the user here after user has authenticated in Google.
+   */
+  public function callback() {
+    // Checks if user cancel login via Google.
+    $error = $this->request->getCurrentRequest()->get('error');
+    if ($error == 'access_denied') {
+      drupal_set_message($this->t('You could not be authenticated.'), 'error');
+      return $this->redirect('user.login');
+    }
+
+    /* @var \League\OAuth2\Client\Provider\Google|false $google */
+    $google = $this->networkManager->createInstance('social_auth_google')->getSdk();
+
+    // If Google client could not be obtained.
+    if (!$google) {
+      drupal_set_message($this->t('Social Auth Google not configured properly. Contact site administrator.'), 'error');
+      return $this->redirect('user.login');
+    }
+
+    $state = $this->dataHandler->get('oauth2state');
+
+    // Retrieves $_GET['state'].
+    $retrievedState = $this->request->getCurrentRequest()->query->get('state');
+    if (empty($retrievedState) || ($retrievedState !== $state)) {
+      $this->userManager->nullifySessionKeys();
+      drupal_set_message($this->t('Google login failed. Unvalid OAuth2 state.'), 'error');
+      return $this->redirect('user.login');
+    }
+
+    // Saves access token to session.
+    $this->dataHandler->set('access_token', $this->mastodonManager->getAccessToken());
+
+    $this->mastodonManager->setClient($mastodon)->authenticate();
+
+    // Gets user's info from Google API.
+    if (!$mastodon_profile = $this->mastodonManager->getUserInfo()) {
+      drupal_set_message($this->t('Mastodon login failed, could not load Mastodon profile. Contact site administrator.'), 'error');
+      return $this->redirect('user.login');
+    }
+
+    // Gets (or not) extra initial data.
+    $data = $this->userManager->checkIfUserExists($mastodon_profile->getId()) ? NULL : $this->mastodonManager->getExtraDetails();
+
+    // If user information could be retrieved.
+    return $this->userManager->authenticateUser($mastodon_profile->getName(), $mastodon_profile->getEmail(), $mastodon_profile->getId(), $this->mastodonManager->getAccessToken(), $mastodon_profile->getAvatar(), $data);
+  }
 }
