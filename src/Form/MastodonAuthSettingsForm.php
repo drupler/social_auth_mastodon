@@ -90,6 +90,14 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       ),
     ];
 
+    $form['mastodon_settings']['redirect_uri'] = [
+      '#type' => 'textfield',
+      '#disabled' => TRUE,
+      '#title' => $this->t('Redirect URI'),
+      '#description' => $this->t('Copy this to <em>Redirect URIs</em> when creating a key'),
+      '#default_value' => $GLOBALS['base_url'] . '/user/login/mastodon/callback',
+    ];
+
     $form['mastodon_settings']['instance'] = [
       '#type' => 'textfield',
       '#required' => TRUE,
@@ -114,14 +122,6 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       '#description' => $this->t('Copy the Client Secret here.'),
     ];
 
-    $form['mastodon_settings']['redirect_uri'] = [
-      '#type' => 'textfield',
-      '#disabled' => TRUE,
-      '#title' => $this->t('Redirect URI'),
-      '#description' => $this->t('Copy this to <em>Redirect URIs</em> when creating a key'),
-      '#default_value' => $GLOBALS['base_url'],
-    ];
-
     return parent::buildForm($form, $form_state);
   }
 
@@ -131,10 +131,9 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $this->config('social_auth_mastodon.settings')
-      ->set('client_key', trim($values['client_key']))
+      ->set('instance', trim($values['instance']))
+      ->set('client_id', trim($values['client_id']))
       ->set('client_secret', trim($values['client_secret']))
-      ->set('scopes', $values['scopes'])
-      ->set('endpoints', $values['endpoints'])
       ->save();
 
     parent::submitForm($form, $form_state);
