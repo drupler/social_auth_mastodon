@@ -21,6 +21,7 @@ function social_auth_mastodon_requirements($phase) {
 
   // Social API should be installed at this point in order to check library.
   \Drupal::service('module_installer')->install(['social_api']);
+  \Drupal::service('module_installer')->install(['social_auth']);
 
   if ($phase == 'install') {
     $requirements = SocialApiImplementerInstaller::checkLibrary('social_auth_mastodon', 'Social Auth Mastodon', 'lrf141/oauth2-mastodon', 1.0, 1.0);
