@@ -14,8 +14,8 @@
         "lrf141/oauth2-mastodon": "^1.0"
     },
     "support": {
-        "issues": "https://www.drupal.org/project/issues/social_api",
-        "source": "http://cgit.drupalcode.org/social_api"
+        "issues": "https://www.drupal.org/project/issues/social_auth_mastodon",
+        "source": "http://cgit.drupalcode.org/social_auth_mastodon"
     },
     "license": "GPL-2.0+"
 }
