@@ -15,13 +15,13 @@ function social_auth_mastodon_help($route_name, RouteMatchInterface $route_match
 
   switch ($route_name) {
     case 'social_auth_mastodon.settings_form':
-      // No handbook yet, uncomment and fix a link when done
-      /*
       $output = '<h3>' . t('Configuration instructions') . '</h3>';
       $output .= '<p>';
-      $output .= t('Configuration instructions and other useful documentation can be found from <a href="@handbook-url">Social Auth Mastodon Handbook</a>.', ['@handbook-url' => 'https://www.drupal.org/node/2137']);
+      $output .= t(
+        'Configuration instructions and other useful documentation can be found from <a href="@handbook-url">Social Auth Mastodon Handbook</a>.',
+        ['@handbook-url' => 'https://www.drupal.org/docs/8/modules/social-api/social-api-2x/social-auth-2x/social-auth-mastodon-installation-guide']
+      );
       $output .= '</p>';
-      */
       break;
 
   }
