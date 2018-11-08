@@ -11,6 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * Returns responses for Social Auth Mastodon module routes.
+ */
 class MastodonAuthController extends ControllerBase {
 
   /**
@@ -180,11 +183,12 @@ class MastodonAuthController extends ControllerBase {
     // If user information could be retrieved.
     return $this->userManager->authenticateUser(
       $mastodon_profile->getName(),
-      NULL, // User's e-mail address is not possible to check
+      NULL, // User's e-mail address is not possible to check.
       $mastodon_profile->getId(),
       $this->mastodonManager->getAccessToken(),
       $mastodon_profile->toArray()['avatar'],
       $data
     );
   }
+
 }

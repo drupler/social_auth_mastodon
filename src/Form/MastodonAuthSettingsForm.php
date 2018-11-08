@@ -85,7 +85,7 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       '#title' => $this->t('Mastodon Client settings'),
       '#open' => TRUE,
       '#description' => $this->t(
-        'You need to first create a Mastodon App - for mastodon.social instance at <a href="@mastodon-social-dev">@mastodon-social-dev</a>', 
+        'You need to first create a Mastodon App - for mastodon.social instance at <a href="@mastodon-social-dev">@mastodon-social-dev</a>',
         ['@mastodon-social-dev' => 'https://mastodon.social/settings/applications']
       ),
     ];

@@ -24,7 +24,7 @@ interface MastodonAuthSettingsInterface {
   public function getClientSecret();
 
   /**
-   * Gets the selected instance
+   * Gets the selected instance.
    *
    * @return string
    *   The selected instance.
