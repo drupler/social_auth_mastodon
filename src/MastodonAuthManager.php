@@ -58,9 +58,7 @@ class MastodonAuthManager extends OAuth2Manager {
 
     $request = $this->client->getAuthenticatedRequest('GET', $url, $this->getAccessToken());
 
-    $response = $this->client->getResponse($request);
-
-    return $response->getBody()->getContents();
+    return $this->client->getParsedResponse($request);
   }
 
   /**

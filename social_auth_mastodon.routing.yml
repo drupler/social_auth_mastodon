@@ -1,7 +1,7 @@
 social_auth_mastodon.redirect_to_mastodon:
   path: 'user/login/mastodon'
   defaults:
-    _controller: '\Drupal\social_auth_mastodon\Controller\MastodonAuthController::redirectToMastodon'
+    _controller: '\Drupal\social_auth_mastodon\Controller\MastodonAuthController::redirectToProvider'
   requirements:
     # Anonymous users can log in, but authenticated users can also associate a new provider.
     _access: 'TRUE'

@@ -126,8 +126,9 @@ class MastodonAuth extends NetworkBase implements MastodonAuthInterface {
   /**
    * Sets the underlying SDK library.
    *
-   * @return Lrf141\OAuth2\Client\Provider\Mastodon
+   * @return Lrf141\OAuth2\Client\Provider\Mastodon|false
    *   The initialized 3rd party library instance.
+   *   False if could not be initialized.
    *
    * @throws SocialApiException
    *   If the SDK library does not exist.
