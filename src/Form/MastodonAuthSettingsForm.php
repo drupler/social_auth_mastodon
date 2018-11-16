@@ -122,6 +122,21 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       '#description' => $this->t('Copy the Client Secret here.'),
     ];
 
+    $form['mastodon_settings']['advanced'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Advanced settings'),
+      '#open' => FALSE,
+    ];
+
+    $form['mastodon_settings']['advanced']['scopes'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Scopes for API call'),
+      '#default_value' => $config->get('scopes'),
+      '#description' => $this->t('Define any additional scopes to be requested, separated by a comma (e.g.: follow,write:statuses).<br>
+                                  The scope \'read:accounts\' is added by default and always requested.<br>
+                                  You can see the full list of valid scopes and their description <a href="@scopes">here</a>.', ['@scopes' => 'https://docs.joinmastodon.org/api/permissions/']),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -134,6 +149,7 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       ->set('instance', trim($values['instance']))
       ->set('client_id', trim($values['client_id']))
       ->set('client_secret', trim($values['client_secret']))
+      ->set('scopes', trim($values['scopes']))
       ->save();
 
     parent::submitForm($form, $form_state);

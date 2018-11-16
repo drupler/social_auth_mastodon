@@ -44,6 +44,16 @@ class MastodonAuthManager extends OAuth2Manager {
       'read:accounts',
     ];
 
+    $mastodon_scopes = $this->getScopes();
+    if ($mastodon_scopes) {
+      if (strpos($mastodon_scopes, ',')) {
+        $scopes = array_merge($scopes, explode(',', $mastodon_scopes));
+      }
+      else {
+        $scopes[] = $mastodon_scopes;
+      }
+    }
+
     // Returns the URL where user will be redirected.
     return $this->client->getAuthorizationUrl([
       'scope' => $scopes,
