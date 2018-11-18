@@ -24,6 +24,13 @@ class MastodonAuthSettings extends SettingsBase implements MastodonAuthSettingsI
   protected $clientSecret;
 
   /**
+   * Instance URL
+   *
+   * @var string
+   */
+  protected $instance;
+
+  /**
    * Restricted domain.
    *
    * @var string
