@@ -56,7 +56,7 @@ class MastodonAuthManager extends OAuth2Manager {
 
     // Returns the URL where user will be redirected.
     return $this->client->getAuthorizationUrl([
-      'scope' => $scopes,
+      'scope' => implode(' ', $scopes),
     ]);
   }
 
