@@ -137,6 +137,16 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
                                   You can see the full list of valid scopes and their description <a href="@scopes">here</a>.', ['@scopes' => 'https://docs.joinmastodon.org/api/permissions/']),
     ];
 
+    $form['mastodon_settings']['advanced']['endpoints'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('API calls to be made to collect data'),
+      '#default_value' => $config->get('endpoints'),
+      '#description' => $this->t('Define the Endpoints to be requested when user authenticates with Mastodon for the first time<br>
+                                  Enter each endpoint in different lines in the format <em>endpoint</em>|<em>name_of_endpoint</em>.<br>
+                                  <b>For instance:</b><br>
+                                  /api/v1/accounts/:id/followers|followers<br>'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -150,6 +160,7 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       ->set('client_id', trim($values['client_id']))
       ->set('client_secret', trim($values['client_secret']))
       ->set('scopes', trim($values['scopes']))
+      ->set('endpoints', trim($values['endpoints']))
       ->save();
 
     parent::submitForm($form, $form_state);
