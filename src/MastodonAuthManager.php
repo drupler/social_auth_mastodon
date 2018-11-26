@@ -64,7 +64,7 @@ class MastodonAuthManager extends OAuth2Manager {
    * {@inheritdoc}
    */
   public function requestEndPoint($path) {
-    $url = $this->settings->getInstance() . $path;
+    $url = $this->client->getInstanceUrl() . $path;
 
     $request = $this->client->getAuthenticatedRequest('GET', $url, $this->getAccessToken());
 
