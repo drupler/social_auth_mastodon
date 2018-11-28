@@ -144,7 +144,8 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       '#description' => $this->t('Define the Endpoints to be requested when user authenticates with Mastodon for the first time<br>
                                   Enter each endpoint in different lines in the format <em>endpoint</em>|<em>name_of_endpoint</em>.<br>
                                   <b>For instance:</b><br>
-                                  /api/v1/accounts/:id/followers|followers<br>'),
+                                  /api/v1/accounts/relationships|relationships<br>
+                                  Look for the endpoints in the <a href="@api-docs">Mastodon REST API documentation</a><br>', ['@api-docs' => 'https://docs.joinmastodon.org/api/rest/accounts/']),
     ];
 
     return parent::buildForm($form, $form_state);
