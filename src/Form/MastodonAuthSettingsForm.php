@@ -132,7 +132,7 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       '#type' => 'textarea',
       '#title' => $this->t('Scopes for API call'),
       '#default_value' => $config->get('scopes'),
-      '#description' => $this->t('Define any additional scopes to be requested, separated by a comma (e.g.: follow,write:statuses).<br>
+      '#description' => $this->t('Define any additional scopes to be requested, separated by a comma (e.g.: follow,write:statuses,read:follows).<br>
                                   The scope \'read:accounts\' is added by default and always requested.<br>
                                   You can see the full list of valid scopes and their description <a href="@scopes">here</a>.', ['@scopes' => 'https://docs.joinmastodon.org/api/permissions/']),
     ];
