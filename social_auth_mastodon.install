@@ -11,9 +11,8 @@ use Drupal\social_auth\Controller\SocialAuthController;
 /**
  * Implements hook_requirements().
  *
- * Checks that a compatible version of OAuth2 Mastodon library for the
- * league OAuth2 client with Composer. Check installation instructions
- * from the README.txt.
+ * Checks that a compatible version of PHP League OAuth2 Mastodon library is
+ * available. Check installation instructions in README.txt.
  */
 function social_auth_mastodon_requirements($phase) {
 
@@ -43,17 +42,4 @@ function social_auth_mastodon_install() {
  */
 function social_auth_mastodon_uninstall() {
   SocialAuthController::deleteLoginButtonSettings('social_auth_mastodon');
-}
-
-/**
- * Implements hook_update_N().
- *
- * The key api_calls was changed to endpoints. This update copies the values
- * in 'api_calls' to 'endpoints'.
- */
-function social_auth_mastodon_update_8201(&$sandbox) {
-  $config = \Drupal::configFactory()->getEditable('social_auth_mastodon.settings');
-  $endpoints = $config->get('api_calls');
-
-  $config->set('endpoints', $endpoints)->save();
 }
