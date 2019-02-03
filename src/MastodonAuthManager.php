@@ -2,8 +2,10 @@
 
 namespace Drupal\social_auth_mastodon;
 
-use Drupal\social_auth\AuthManager\OAuth2Manager;
 use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\social_auth\AuthManager\OAuth2Manager;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /**
  * Contains all the logic for Mastodon OAuth2 authentication.
@@ -13,26 +15,37 @@ class MastodonAuthManager extends OAuth2Manager {
   /**
    * Constructor.
    *
-   * @param \Drupal\Core\Config\ConfigFactory $configFactory
+   * @param \Drupal\Core\Config\ConfigFactory $config_factory
    *   Used for accessing configuration object factory.
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   *   The logger factory.
    */
-  public function __construct(ConfigFactory $configFactory) {
-    parent::__construct($configFactory->get('social_auth_mastodon.settings'));
+  public function __construct(ConfigFactory $config_factory, LoggerChannelFactoryInterface $logger_factory) {
+    parent::__construct($config_factory->get('social_auth_mastodon.settings'), $logger_factory);
   }
 
   /**
    * {@inheritdoc}
    */
   public function authenticate() {
-    $this->setAccessToken($this->client->getAccessToken('authorization_code',
-      ['code' => $_GET['code']]));
+    try {
+      $this->setAccessToken($this->client->getAccessToken('authorization_code',
+        ['code' => $_GET['code']]));
+    }
+    catch (IdentityProviderException $e) {
+      $this->loggerFactory->get('social_auth_mastodon')
+        ->error('There was an error during authentication. Exception: ' . $e->getMessage());
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function getUserInfo() {
-    $this->user = $this->client->getResourceOwner($this->getAccessToken());
+    if (!$this->user) {
+      $this->user = $this->client->getResourceOwner($this->getAccessToken());
+    }
+
     return $this->user;
   }
 
@@ -44,14 +57,9 @@ class MastodonAuthManager extends OAuth2Manager {
       'read:accounts',
     ];
 
-    $mastodon_scopes = $this->getScopes();
-    if ($mastodon_scopes) {
-      if (strpos($mastodon_scopes, ',')) {
-        $scopes = array_merge($scopes, explode(',', $mastodon_scopes));
-      }
-      else {
-        $scopes[] = $mastodon_scopes;
-      }
+    $extra_scopes = $this->getScopes();
+    if ($extra_scopes) {
+      $scopes = array_merge($scopes, explode(',', $extra_scopes));
     }
 
     // Returns the URL where user will be redirected.
@@ -63,12 +71,24 @@ class MastodonAuthManager extends OAuth2Manager {
   /**
    * {@inheritdoc}
    */
-  public function requestEndPoint($path) {
-    $url = $this->client->getInstanceUrl() . $path;
+  public function requestEndPoint($method, $path, $domain = NULL, array $options = []) {
+    if (!$domain) {
+      $domain = $this->client->getInstanceUrl();
+    }
 
-    $request = $this->client->getAuthenticatedRequest('GET', $url, $this->getAccessToken());
+    $url = $domain . $path;
 
-    return $this->client->getParsedResponse($request);
+    $request = $this->client->getAuthenticatedRequest($method, $url, $this->getAccessToken());
+
+    try {
+      return $this->client->getParsedResponse($request);
+    }
+    catch (IdentityProviderException $e) {
+      $this->loggerFactory->get('social_auth_mastodon')
+        ->error('There was an error when requesting ' . $url . '. Exception: ' . $e->getMessage());
+    }
+
+    return NULL;
   }
 
   /**
