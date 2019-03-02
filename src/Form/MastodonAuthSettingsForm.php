@@ -43,14 +43,6 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       ),
     ];
 
-    $form['mastodon_settings']['redirect_uri'] = [
-      '#type' => 'textfield',
-      '#disabled' => TRUE,
-      '#title' => $this->t('Redirect URI'),
-      '#description' => $this->t('Copy this to <em>Redirect URIs</em> when creating a key'),
-      '#default_value' => Url::fromRoute('social_auth_mastodon.callback')->setAbsolute()->toString(),
-    ];
-
     $form['mastodon_settings']['instance'] = [
       '#type' => 'textfield',
       '#required' => TRUE,
@@ -73,6 +65,14 @@ class MastodonAuthSettingsForm extends SocialAuthSettingsForm {
       '#title' => $this->t('Client Secret'),
       '#default_value' => $config->get('client_secret'),
       '#description' => $this->t('Copy the Client Secret here.'),
+    ];
+
+    $form['mastodon_settings']['redirect_uri'] = [
+      '#type' => 'textfield',
+      '#disabled' => TRUE,
+      '#title' => $this->t('Redirect URI'),
+      '#description' => $this->t('Copy this to <em>Redirect URIs</em> when creating a key'),
+      '#default_value' => Url::fromRoute('social_auth_mastodon.callback')->setAbsolute()->toString(),
     ];
 
     $form['mastodon_settings']['advanced'] = [
