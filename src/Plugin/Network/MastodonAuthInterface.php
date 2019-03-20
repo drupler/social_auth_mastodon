@@ -2,7 +2,7 @@
 
 namespace Drupal\social_auth_mastodon\Plugin\Network;
 
-use Drupal\social_api\Plugin\NetworkInterface;
+use Drupal\social_auth\Plugin\Network\NetworkInterface;
 
 /**
  * Defines the Mastodon Auth interface.
