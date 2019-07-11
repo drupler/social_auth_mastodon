@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Returns responses for Social Auth Mastodon module routes.
+ * Returns responses for Social Auth Mastodon routes.
  */
 class MastodonAuthController extends OAuth2ControllerBase {
 
@@ -69,14 +69,14 @@ class MastodonAuthController extends OAuth2ControllerBase {
    * Mastodon returns the user here after user has authenticated in Mastodon.
    */
   public function callback() {
-    // Checks if user cancel login via Mastodon.
-    if ($this->request->getCurrentRequest()->query->has('error')) {
-      $this->messenger->addError('You could not be authenticated.');
 
-      return $this->redirect('user.login');
+    // Checks if there was an authentication error.
+    $redirect = $this->checkAuthError();
+    if ($redirect) {
+      return $redirect;
     }
 
-    /* @var \Lrf141\OAuth2\Client\Provider\MastodonResourceOwner|null $profile */
+    /** @var \Lrf141\OAuth2\Client\Provider\MastodonResourceOwner|null $profile */
     $profile = $this->processCallback();
 
     // If authentication was successful.
@@ -85,7 +85,12 @@ class MastodonAuthController extends OAuth2ControllerBase {
       // Gets (or not) extra initial data.
       $data = $this->userAuthenticator->checkProviderIsAssociated($profile->getId()) ? NULL : $this->providerManager->getExtraDetails();
 
-      return $this->userAuthenticator->authenticateUser($profile->getName(), NULL, $profile->getId(), $this->providerManager->getAccessToken(), $profile->toArray()['avatar'], $data);
+      return $this->userAuthenticator->authenticateUser($profile->getName(),
+                                                        NULL,
+                                                        $profile->getId(),
+                                                        $this->providerManager->getAccessToken(),
+                                                        $profile->toArray()['avatar'],
+                                                        $data);
     }
 
     return $this->redirect('user.login');

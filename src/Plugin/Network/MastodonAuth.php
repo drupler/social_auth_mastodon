@@ -26,6 +26,7 @@ use Lrf141\OAuth2\Client\Provider\Mastodon;
  * )
  */
 class MastodonAuth extends NetworkBase implements MastodonAuthInterface {
+
   /**
    * Sets the underlying SDK library.
    *
@@ -33,7 +34,7 @@ class MastodonAuth extends NetworkBase implements MastodonAuthInterface {
    *   The initialized 3rd party library instance.
    *   False if could not be initialized.
    *
-   * @throws SocialApiException
+   * @throws \Drupal\social_api\SocialApiException
    *   If the SDK library does not exist.
    */
   protected function initSdk() {
