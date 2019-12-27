@@ -4,7 +4,7 @@
     "description": "Social Auth integration for Mastodon.",
     "keywords": ["Drupal"],
     "license": "GPL-2.0-or-later",
-    "homepage": "https://www.drupal.org/project/social_api_mastodon",
+    "homepage": "https://www.drupal.org/project/social_auth_mastodon",
     "minimum-stability": "dev",
     "support": {
         "issues": "https://www.drupal.org/project/issues/social_auth_mastodon",

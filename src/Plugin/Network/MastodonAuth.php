@@ -44,7 +44,7 @@ class MastodonAuth extends NetworkBase implements MastodonAuthInterface {
       throw new SocialApiException(sprintf('The Mastodon Library for the OAuth2 not found. Class: %s.', $class_name));
     }
 
-    /* @var \Drupal\social_auth_mastodon\Settings\MastodonAuthSettings $settings */
+    /** @var \Drupal\social_auth_mastodon\Settings\MastodonAuthSettings $settings */
     $settings = $this->settings;
 
     if ($this->validateConfig($settings)) {
