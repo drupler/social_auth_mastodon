@@ -1,4 +1,6 @@
 social_auth_mastodon.settings.tab:
   title: 'Mastodon'
   route_name: social_auth_mastodon.settings_form
+  route_parameters:
+    network: 'mastodon'
   base_route: social_auth.integrations

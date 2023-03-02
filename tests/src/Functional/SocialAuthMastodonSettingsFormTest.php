@@ -26,6 +26,7 @@ class SocialAuthMastodonSettingsFormTest extends SocialAuthTestBase {
   protected function setUp() {
     $this->module = 'social_auth_mastodon';
     $this->provider = 'mastodon';
+    $this->moduleType = 'social-auth';
 
     parent::setUp();
   }

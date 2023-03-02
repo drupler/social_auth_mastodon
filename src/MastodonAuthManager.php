@@ -2,10 +2,13 @@
 
 namespace Drupal\social_auth_mastodon;
 
+use Drupal\social_auth\AuthManager\OAuth2Manager;
+use Drupal\social_auth\User\SocialAuthUser;
+use Drupal\social_auth\User\SocialAuthUserInterface;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\social_auth\AuthManager\OAuth2Manager;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Contains all the logic for Mastodon OAuth2 authentication.
@@ -19,15 +22,21 @@ class MastodonAuthManager extends OAuth2Manager {
    *   Used for accessing configuration object factory.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   Used to get the authorization code from the callback request.vvvvv
    */
-  public function __construct(ConfigFactory $config_factory, LoggerChannelFactoryInterface $logger_factory) {
-    parent::__construct($config_factory->get('social_auth_mastodon.settings'), $logger_factory);
+  public function __construct(ConfigFactory $config_factory,
+                              LoggerChannelFactoryInterface $logger_factory,
+                              RequestStack $request_stack) {
+    parent::__construct($config_factory->get('social_auth_mastodon.settings'),
+                        $logger_factory,
+                        $request_stack->getCurrentRequest());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function authenticate() {
+  public function authenticate(): void {
     try {
       $this->setAccessToken($this->client->getAccessToken('authorization_code',
         ['code' => $_GET['code']]));
@@ -38,24 +47,29 @@ class MastodonAuthManager extends OAuth2Manager {
     }
   }
 
-  /**
+    /**
    * {@inheritdoc}
    */
-  public function getUserInfo() {
+  public function getUserInfo(): SocialAuthUserInterface {
     if (!$this->user) {
-      $this->user = $this->client->getResourceOwner($this->getAccessToken());
+      $owner = $this->client->getResourceOwner($this->getAccessToken());
+      $this->user = new SocialAuthUser(
+        $owner->getName(),
+        $owner->getId(),
+        $this->getAccessToken(),
+        $owner->getEmail(),
+        $owner->getAvatar(),
+        $this->getExtraDetails()
+      );
     }
-
     return $this->user;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAuthorizationUrl() {
-    $scopes = [
-      'read:accounts',
-    ];
+  public function getAuthorizationUrl(): string {
+    $scopes = ['read', 'write'];
 
     $extra_scopes = $this->getScopes();
     if ($extra_scopes) {
@@ -64,19 +78,27 @@ class MastodonAuthManager extends OAuth2Manager {
 
     // Returns the URL where user will be redirected.
     return $this->client->getAuthorizationUrl([
-      'scope' => implode(' ', $scopes),
+      'scope' => $scopes,
     ]);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function requestEndPoint($method, $path, $domain = NULL, array $options = []) {
+  public function requestEndPoint($method, $path, $domain = NULL, array $options = []): mixed {
     if (!$domain) {
       $domain = $this->client->getInstanceUrl();
     }
 
     $url = $domain . $path;
+
+    try {
+      $request = $this->client->getAuthenticatedRequest($method, $url, $this->getAccessToken(), $options);
+    }
+    catch (\Exception $e) {
+      watchdog_exception('social_auth_mastodon', $e);
+      return NULL;
+    }
 
     $request = $this->client->getAuthenticatedRequest($method, $url, $this->getAccessToken());
 
@@ -94,7 +116,7 @@ class MastodonAuthManager extends OAuth2Manager {
   /**
    * {@inheritdoc}
    */
-  public function getState() {
+  public function getState(): string {
     return $this->client->getState();
   }
 

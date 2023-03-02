@@ -8,27 +8,11 @@ namespace Drupal\social_auth_mastodon\Settings;
 interface MastodonAuthSettingsInterface {
 
   /**
-   * Gets the client ID.
+   * Gets the default instance.
    *
-   * @return string
-   *   The client ID.
+   * @return string|null
+   *   The default instance.
    */
-  public function getClientId();
-
-  /**
-   * Gets the client secret.
-   *
-   * @return string
-   *   The client secret.
-   */
-  public function getClientSecret();
-
-  /**
-   * Gets the selected instance.
-   *
-   * @return string
-   *   The selected instance.
-   */
-  public function getInstance();
+  public function getDefaultInstance(): ?string;
 
 }

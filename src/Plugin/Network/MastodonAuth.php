@@ -2,11 +2,11 @@
 
 namespace Drupal\social_auth_mastodon\Plugin\Network;
 
-use Drupal\Core\Url;
 use Drupal\social_api\SocialApiException;
 use Drupal\social_auth\Plugin\Network\NetworkBase;
-use Drupal\social_auth_mastodon\Settings\MastodonAuthSettings;
+use Drupal\social_auth\Settings\SettingsInterface;
 use Lrf141\OAuth2\Client\Provider\Mastodon;
+use Drupal\social_auth\Plugin\Network\NetworkInterface;
 
 /**
  * Defines a Network Plugin for Social Auth Mastodon.
@@ -15,8 +15,16 @@ use Lrf141\OAuth2\Client\Provider\Mastodon;
  *
  * @Network(
  *   id = "social_auth_mastodon",
+ *   short_name = "mastodon",
  *   social_network = "Mastodon",
  *   type = "social_auth",
+ *   class_name = "\League\OAuth2\Client\Provider\Mastodon",
+ *   auth_manager = "\Drupal\social_auth_mastodon\MastodonAuthManager",
+ *   routes = {
+ *     "redirect": "social_auth.network.redirect",
+ *     "callback": "social_auth.network.callback",
+ *     "settings_form": "social_auth.network.settings_form",
+ *   },
  *   handlers = {
  *     "settings": {
  *       "class": "\Drupal\social_auth_mastodon\Settings\MastodonAuthSettings",
@@ -25,7 +33,7 @@ use Lrf141\OAuth2\Client\Provider\Mastodon;
  *   }
  * )
  */
-class MastodonAuth extends NetworkBase implements MastodonAuthInterface {
+class MastodonAuth extends NetworkBase implements NetworkInterface {
 
   /**
    * Sets the underlying SDK library.
@@ -37,7 +45,7 @@ class MastodonAuth extends NetworkBase implements MastodonAuthInterface {
    * @throws \Drupal\social_api\SocialApiException
    *   If the SDK library does not exist.
    */
-  protected function initSdk() {
+  protected function initSdk(): mixed {
 
     $class_name = '\Lrf141\OAuth2\Client\Provider\Mastodon';
     if (!class_exists($class_name)) {
@@ -50,48 +58,22 @@ class MastodonAuth extends NetworkBase implements MastodonAuthInterface {
     if ($this->validateConfig($settings)) {
       // All these settings are mandatory.
       $league_settings = [
-        'clientId' => $settings->getClientId(),
-        'clientSecret' => $settings->getClientSecret(),
-        'redirectUri' => Url::fromRoute('social_auth_mastodon.callback')->setAbsolute()->toString(),
-        'instance' => $settings->getInstance(),
+        'clientId'      => $settings->getClientId(),
+        'clientSecret'  => $settings->getClientSecret(),
+        'redirectUri'   => $this->getCallbackUrl()->setAbsolute()->toString(),
+        'instance'      => $settings->getDefaultInstance() == '' ? NULL : $settings->getDefaultInstance(),
       ];
 
       // Proxy configuration data for outward proxy.
-      $proxyUrl = $this->siteSettings->get('http_client_config')['proxy']['http'];
-      if ($proxyUrl) {
-        $league_settings = [
-          'proxy' => $proxyUrl,
-        ];
+      $config = $this->siteSettings->get('http_client_config');
+      if (!empty($config['proxy']['http'])) {
+        $league_settings['proxy'] = $config['proxy']['http'];
       }
 
       return new Mastodon($league_settings);
     }
 
     return FALSE;
-  }
-
-  /**
-   * Checks that module is configured.
-   *
-   * @param \Drupal\social_auth_mastodon\Settings\MastodonAuthSettings $settings
-   *   The Mastodon auth settings.
-   *
-   * @return bool
-   *   True if module is configured.
-   *   False otherwise.
-   */
-  protected function validateConfig(MastodonAuthSettings $settings) {
-    $client_id = $settings->getClientId();
-    $client_secret = $settings->getClientSecret();
-    if (!$client_id || !$client_secret) {
-      $this->loggerFactory
-        ->get('social_auth_mastodon')
-        ->error('Define Client ID and Client Secret on module settings.');
-
-      return FALSE;
-    }
-
-    return TRUE;
   }
 
 }
